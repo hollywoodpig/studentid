@@ -123,7 +123,6 @@ ion-icon {
 }
 
 select.form-control {
-    max-width: 14rem;
     border-radius: $bdrs-sm;
     cursor: pointer;
 
@@ -298,6 +297,12 @@ select.form-control {
         flex-direction: column;
     }
 
+    @media (min-width: 576px) {
+        select.form-control {
+            max-width: 14rem;
+        }    
+    }
+
     .form-control:not(:last-child) {
         @media (min-width: 576px) {
             margin-right: 1em;
@@ -320,6 +325,15 @@ select.form-control {
     color: $text-emp;
     z-index: 999;
     pointer-events: none;
+    border-radius: $bdrs-sm;
+
+    &.success {
+        color: limegreen;
+    }
+
+    &.danger {
+        color: crimson;
+    }
 
     @media (max-width: 576px) {
         top: unset;

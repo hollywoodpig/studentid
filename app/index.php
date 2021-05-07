@@ -1,5 +1,11 @@
 <?php
-	require 'includes/config.php';
+    require('includes/db.php');
+
+    $user = $_SESSION['user'];
+
+    if ( !isset($user) ) {
+        header('Location: login.php');
+    }
 ?>
 
 <!DOCTYPE html>
@@ -7,51 +13,135 @@
 	<head>
 		<meta charset="UTF-8">
 		<meta name="viewport" content="width=device-width,initial-scale=1" >
-		<title><?php echo $config['title'] ?></title>
+		<title><?php echo $user['name'] ?></title>
 		<link rel="stylesheet" href="css/app.min.css">
 		<script type="module" src="https://unpkg.com/ionicons@5.4.0/dist/ionicons/ionicons.esm.js"></script>
 		<script nomodule="" src="https://unpkg.com/ionicons@5.4.0/dist/ionicons/ionicons.js"></script>
 	</head>
 	<body class="layout">
-		<div class="layout__heading text-center">
-			<h1>Добро пожаловать в <?php echo $config['title'] ?></h1>
+        <header class="header">
+            <a href="https://biit39.ru/" target="_blank" class="form-control logo">БИТ</a>
+            <div class="header__controls">
+				<a href="https://youtu.be/dQw4w9WgXcQ" target="_blank" class="form-control">
+                    <ion-icon name="settings-outline" size="small"></ion-icon>
+                </a>
+                <a href="logout.php" class="form-control">
+                    <span><?php echo $user['name'] ?></span>
+                    <ion-icon name="log-out-outline"></ion-icon>
+				</a>
+            </div>
+        </header>
+		<div class="layout__heading">
+			<h1><?php echo $user['name'] ?></h1>
 		</div>
 		<main class="layout__main">
-			<form class="form" data-type="register">
-				<h4 class="form__title">Регистрация</h4>
-				<div class="form__content">
-					<input type="text" class="form-control" placeholder="Код приглашения">
-					<input type="email" class="form-control" placeholder="Введите вашу почту">
-					<input type="text" class="form-control" placeholder="Придумайте логин">
-					<input type="password" class="form-control" placeholder="Придумайте пароль">
-					<button type="submit" class="form-control">Зарегистрироваться</button>
+			<div class="teacher">
+                <?php if ($user['role'] == 'teacher'): ?>
+                    <form class="teacher__controls" method="POST">
+                        <select class="form-control" name="current-subject" required>
+                            <option disabled selected>Выберите предмет</option>
+
+                            <?php
+                                $user_id = $user['id'];
+
+                                $subjects = mysqli_query($connection, "SELECT * FROM `subjects` WHERE `teacher_id` = $user_id");
+
+                                while ( ($subject = mysqli_fetch_assoc($subjects)) ) {
+                                    echo '
+                                        <option value="' . $subject['id'] . '"> ' . $subject['name'] . ' </option>
+                                    ';
+                                }
+                            ?>
+                        </select>
+                        <button class="form-control" name="output-marks">Вывести оценки</button>
+                    </form>
+                <?php endif; ?>
+				<div class="table">
+					<table>
+                        <?php if ($user['role'] == 'teacher'): ?>
+                            <?php
+                                if ( isset($_POST['output-marks']) ) {
+                                    $subject_id = $_POST['current-subject'];
+
+                                    echo '
+                                        <tr>
+                                            <th><h4>Студент</h4></th>
+                                            <th><h4>Оценка</h4></th>
+                                        </tr>
+                                    ';
+
+                                    // $marks = mysqli_query($connection, "SELECT * FROM `marks` WHERE `subject_id` = '$subject_id' ");
+
+                                    // while ( ($item = mysqli_fetch_assoc($marks)) ) {
+                                    //     $student_id = $item['student_id'];
+
+                                    //     $mark = $item['mark'];
+                                    //     $student_name = mysqli_fetch_assoc(mysqli_query($connection, "SELECT `name` FROM `users` WHERE `id` = '$student_id'"))['name'];
+                                        
+                                    //     print_r($item);
+                                    // }
+
+                                    $students = mysqli_query($connection, "SELECT * FROM `users` WHERE `role` = 'student'");
+                                    
+                                    while ( ($student = mysqli_fetch_assoc($students)) ) {
+                                        $student_id = $student['id'];
+
+                                        $mark = mysqli_fetch_assoc(mysqli_query($connection, "SELECT `mark` from `marks` WHERE `subject_id` = '$subject_id' AND `student_id` = '$student_id'"))['mark'];
+
+                                        if ( empty($mark) ) {
+                                            $mark = 'Нет оценки';
+                                        }
+
+                                        echo '
+                                            <tr>
+                                                <td>' . $student['name'] . '</td>
+                                                <td>' . $mark . '</td>
+                                            </tr>
+                                        ';
+
+                                        // $teacher_name = mysqli_fetch_assoc(mysqli_query($connection, "SELECT `name` FROM `users` WHERE `id` = '$teacher_id' AND `role` = 'teacher'"))['name'];
+                                        // $mark = mysqli_fetch_assoc(mysqli_query($connection, "SELECT `mark` from `marks` WHERE `subject_id` = '$subject_id' AND `student_id` = '$student_id'"))['mark'];
+                                    }
+                                }
+                            ?>
+                        <?php endif ?>
+
+                        <?php if ($user['role'] == 'student'): ?>
+                            <tr>
+                                <th><h4>Предмет</h4></th>
+                                <th><h4>Оценка</h4></th>
+                                <th><h4>Преподаватель</h4></th>
+                            </tr>
+
+                            <?php
+                                $subjects = mysqli_query($connection, 'SELECT * FROM `subjects`');
+
+                                while ( ($subject = mysqli_fetch_assoc($subjects)) ) {
+                                    $teacher_id = $subject['teacher_id'];
+                                    $subject_id = $subject['id'];
+                                    $student_id = $user['id'];
+
+                                    $teacher_name = mysqli_fetch_assoc(mysqli_query($connection, "SELECT `name` FROM `users` WHERE `id` = '$teacher_id' AND `role` = 'teacher'"))['name'];
+                                    $mark = mysqli_fetch_assoc(mysqli_query($connection, "SELECT `mark` from `marks` WHERE `subject_id` = '$subject_id' AND `student_id` = '$student_id'"))['mark'];
+
+                                    if ( empty($mark) ) {
+                                        $mark = 'Нет оценки';
+                                    }
+        
+                                    echo '
+                                        <tr>
+                                            <td>' . $subject['name'] .'</td>
+                                            <td>' . $mark . '</td>
+                                            <td>' . $teacher_name . '</td>
+                                        </tr>
+                                    ';
+                                }
+                            ?>
+
+                        <?php endif ?>
+					</table>
 				</div>
-				<div class="form__footer">
-					<button class="button-link" data-type-open="auth">Есть аккаунт?</button>
-				</div>
-			</form>
-			<form class="form" data-type="auth" data-visible="true">
-				<h4 class="form__title">Вход</h4>
-				<div class="form__content">
-					<input type="email" class="form-control" placeholder="Почта">
-					<input type="password" class="form-control" placeholder="Пароль">
-					<button type="submit" class="form-control">Войти</button>
-				</div>
-				<div class="form__footer">
-					<button class="button-link" data-type-open="register">Нет аккаунта?</button>
-					<button class="button-link" data-type-open="restore-password">Забыли пароль?</button>
-				</div>
-			</form>
-			<form class="form" data-type="restore-password">
-				<h4 class="form__title">Восстановление пароля</h4>
-				<div class="form__content">
-					<input type="email" class="form-control" placeholder="Почта">
-					<button type="submit" class="form-control">Восстановить пароль</button>
-				</div>
-				<div class="form__footer">
-					<button class="button-link" data-type-open="register">Обратно</button>
-				</div>
-			</form>
+			</div>
 		</main>
 		<?php include 'includes/footer.php' ?>
 
