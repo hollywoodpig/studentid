@@ -55,6 +55,17 @@
                         </select>
                         <button class="form-control" name="output-marks">Вывести оценки</button>
                     </form>
+                    <?php if ( isset($_POST['output-marks']) ): ?>
+                        <h4 class="teacher__subject-title">
+                            <?php
+                                $subject_id = $_POST['current-subject'];
+
+                                $subject_name = mysqli_fetch_assoc(mysqli_query($connection, "SELECT `name` from `subjects` WHERE `id` = '$subject_id'"))['name'];
+
+                                echo $subject_name;
+                            ?>
+                        </h4>
+                    <?php endif; ?>
                 <?php endif; ?>
 				<div class="table">
 					<table>
@@ -69,17 +80,6 @@
                                             <th><h4>Оценка</h4></th>
                                         </tr>
                                     ';
-
-                                    // $marks = mysqli_query($connection, "SELECT * FROM `marks` WHERE `subject_id` = '$subject_id' ");
-
-                                    // while ( ($item = mysqli_fetch_assoc($marks)) ) {
-                                    //     $student_id = $item['student_id'];
-
-                                    //     $mark = $item['mark'];
-                                    //     $student_name = mysqli_fetch_assoc(mysqli_query($connection, "SELECT `name` FROM `users` WHERE `id` = '$student_id'"))['name'];
-                                        
-                                    //     print_r($item);
-                                    // }
 
                                     $students = mysqli_query($connection, "SELECT * FROM `users` WHERE `role` = 'student'");
                                     
@@ -98,9 +98,6 @@
                                                 <td>' . $mark . '</td>
                                             </tr>
                                         ';
-
-                                        // $teacher_name = mysqli_fetch_assoc(mysqli_query($connection, "SELECT `name` FROM `users` WHERE `id` = '$teacher_id' AND `role` = 'teacher'"))['name'];
-                                        // $mark = mysqli_fetch_assoc(mysqli_query($connection, "SELECT `mark` from `marks` WHERE `subject_id` = '$subject_id' AND `student_id` = '$student_id'"))['mark'];
                                     }
                                 }
                             ?>

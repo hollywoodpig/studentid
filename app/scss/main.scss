@@ -286,7 +286,11 @@ select.form-control {
     @include lighting('outside-soft');
 }
 
-// teacher controls
+// teacher
+
+.teacher__subject-title {
+    margin-bottom: 2em;
+}
 
 .teacher__controls {
     display: flex;
