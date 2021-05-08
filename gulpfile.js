@@ -9,6 +9,7 @@ const imagemin = require('gulp-imagemin');
 const newer = require('gulp-newer');
 const del = require('del');
 const smartGrid = require('smart-grid')
+const babel = require('gulp-babel')
 
 function browsersync() {
 	browserSync.init({
@@ -23,6 +24,9 @@ function scripts() {
 	return src([
 		'app/js/app.js'
 	])
+	.pipe(babel({
+		presets: ['@babel/env']
+	}))
 	.pipe(concat('app.min.js'))
 	.pipe(uglify())
 	.pipe(dest('app/js/'))
@@ -90,6 +94,7 @@ function buildcopy() {
 		'app/images/dest/**/*',
 		'app/**/*.html',
 		'app/**/*.php',
+		'app/.htaccess'
 	], { base: 'app' })
 	.pipe(dest('dist'))
 }
