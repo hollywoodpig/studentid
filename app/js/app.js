@@ -17,8 +17,6 @@ typeButtons.forEach(button => {
   })
 })
 
-// temp
-
 const dataClicks = document.querySelectorAll('[data-click]')
 
 dataClicks.forEach(button => {

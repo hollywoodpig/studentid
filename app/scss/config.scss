@@ -147,6 +147,7 @@ h6 {
     display: inline-block;
 
     @include text-gradient;
+    @include hide-text(3);
 }
 
 h1 {

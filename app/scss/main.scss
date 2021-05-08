@@ -47,6 +47,10 @@
     padding-bottom: 2em;
 }
 
+.header + .layout__main {
+    margin-top: 5em;
+}
+
 // form control
 
 .form-control {
@@ -127,6 +131,21 @@ select.form-control {
     cursor: pointer;
 
     @include lighting('inside');
+}
+
+.input-group {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .form-control {
+        margin-bottom: 0 !important;
+    }
+
+    input.form-control {
+        margin-right: 1em;
+        flex-grow: 1;
+    }
 }
 
 // form
@@ -244,9 +263,16 @@ select.form-control {
     max-width: 40em;
 
     .form-control {
-        width: 1em;
         margin: 0 auto;
         text-align: center;
+    }
+
+    &__edit-row {
+        width: 1em;
+
+        .form-control {
+            padding: 0.75em;
+        }
     }
 
     table {
@@ -299,6 +325,10 @@ select.form-control {
 
     @media (max-width: 576px) {
         flex-direction: column;
+
+        select.form-control {
+            max-width: 100%;
+        }
     }
 
     @media (min-width: 576px) {

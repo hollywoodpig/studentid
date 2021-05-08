@@ -72,12 +72,17 @@
                         <?php if ($user['role'] == 'teacher'): ?>
                             <?php
                                 if ( isset($_POST['output-marks']) ) {
+                                    if ( empty($_POST['current-subject']) ) {
+                                        return false;
+                                    }
+
                                     $subject_id = $_POST['current-subject'];
 
                                     echo '
                                         <tr>
                                             <th><h4>Студент</h4></th>
                                             <th><h4>Оценка</h4></th>
+                                            <th>🤔</th>
                                         </tr>
                                     ';
 
@@ -96,6 +101,11 @@
                                             <tr>
                                                 <td>' . $student['name'] . '</td>
                                                 <td>' . $mark . '</td>
+                                                <td class="table__edit-row">
+                                                    <a href="edit.php?student_id=' . $student_id . '&subject_id=' . $subject_id . '" class="form-control">
+                                                        <ion-icon name="create-outline" size="small"></ion-icon>
+                                                    </a>
+                                                </td>
                                             </tr>
                                         ';
                                     }
